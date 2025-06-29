@@ -16,10 +16,11 @@ public class BaseSteps {
     private String endpointPath;
     private Response response;
     public DocumentContext requestBodyJson;
-    String rootEndpoint, bookingEndpoint, creatBookingPayloadPath;
+    String rootEndpoint, eventsEndpoint, bookingsEndpoint, creatBookingPayloadPath;
     public BaseSteps() {
-        rootEndpoint = "https://restful-booker.herokuapp.com";
-        bookingEndpoint = rootEndpoint + "/booking/";
+        rootEndpoint = "http://localhost:8080/v1";
+        eventsEndpoint = rootEndpoint + "/events";
+        bookingsEndpoint = rootEndpoint + "/bookings";
         creatBookingPayloadPath = "/templates/CreateBookingTemplate.json";
     }
 
@@ -33,22 +34,13 @@ public class BaseSteps {
         headers = new Headers(
                 new Header("Content-Type", "application/json"));
         setHeaders(headers);  }
-    public void setHeadersWithContentTypeAndAccept() {
+    public void setHeadersWithUserId() {
         headers = new Headers(
-                new Header("Content-Type", "application/json"),
-                new Header("Accept", "application/json"));
-        setHeaders(headers);  }
-    public void setHeadersWithContentTypeAndAuth() {
-        headers = new Headers(
-                new Header("Content-Type", "application/json"),
-                new Header("Accept", "application/json"),
-                new Header("Authorization", "Basic YWRtaW46cGFzc3dvcmQxMjM="));
+                new Header("userId", "12345"),
+                new Header("Content-Type", "application/json"));
         setHeaders(headers);  }
 
-    public void setHeadersAuthorization() {
-        headers = new Headers(
-                new Header("Authorization", "Basic YWRtaW46cGFzc3dvcmQxMjM="));
-        setHeaders(headers);  }
+
 
     protected URL getURL() {
         try {
@@ -63,12 +55,6 @@ public class BaseSteps {
                 .then().log().all().extract().response();
         return response; }
 
-    public Response getCallWithoutHeader() {
-        response = RestAssured.given().log().all()
-                .relaxedHTTPSValidation()
-                .when().get(getURL())
-                .then().log().all().extract().response();
-        return response; }
 
 
     public Response getPostCall() {
@@ -79,26 +65,16 @@ public class BaseSteps {
                 .then().log().all().extract().response();
         return response; }
 
-    public Response getPostCallWithoutHeaders() {
-        response = RestAssured.given().log().all()
-                .relaxedHTTPSValidation()
-                .body(requestBodyJson.jsonString())
-                .when().post(getURL())
-                .then().log().all().extract().response();
-        return response; }
+
 
     public Response getPutCall() {
-        response = RestAssured.given().log().all()          .relaxedHTTPSValidation().headers(headers)
-                .body(requestBodyJson.jsonString())
+        response = RestAssured.given().log().all()
+                .relaxedHTTPSValidation().headers(headers)
                 .when().put(getURL())
                 .then().log().all().extract().response();
         return response; }
 
-    public Response deleteCall() {
-        response = RestAssured.given().log().all()          .relaxedHTTPSValidation().headers(headers)
-                .when().delete(getURL())
-                .then().log().all().extract().response();
-        return response; }
+
 
     public void setEndpointPath(String endpointPath) {
         this.endpointPath = endpointPath;  }
